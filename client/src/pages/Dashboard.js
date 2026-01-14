@@ -71,10 +71,24 @@ const Dashboard = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validate due date to prevent past dates
+    if (name === 'dueDate' && value) {
+      const selectedDate = new Date(value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+      
+      if (selectedDate < today) {
+        setFormError('Due date cannot be in the past');
+        return;
+      }
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+    setFormError(''); // Clear error when valid input
   };
 
   const handleCreateTask = () => {
@@ -105,6 +119,19 @@ const Dashboard = () => {
     e.preventDefault();
     setSubmitting(true);
     setFormError('');
+
+    // Validate due date is not in the past
+    if (formData.dueDate) {
+      const selectedDate = new Date(formData.dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        setFormError('Due date cannot be in the past');
+        setSubmitting(false);
+        return;
+      }
+    }
 
     try {
       const taskData = {
@@ -233,6 +260,7 @@ const Dashboard = () => {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleInputChange}
+                  min={new Date().toISOString().split('T')[0]}
                   disabled={submitting}
                 />
               </div>

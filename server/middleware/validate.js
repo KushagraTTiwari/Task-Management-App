@@ -12,14 +12,40 @@ export const createTaskValidateBody = joi.object({
     title: joi.string().min(3).max(100).required(),
     description: joi.string().max(500).optional(),
     status: joi.string().valid(TODO, IN_PROGRESS, DONE).optional(),
-    dueDate: joi.date().optional()
+    dueDate: joi.date().min('now').optional().custom((value, helpers) => {
+        if (value) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const dueDate = new Date(value);
+            dueDate.setHours(0, 0, 0, 0);
+            if (dueDate < today) {
+                return helpers.error('date.min');
+            }
+        }
+        return value;
+    }).messages({
+        'date.min': 'Due date cannot be in the past'
+    })
 })
 
 export const updateTaskValidateBody = joi.object({
   title: joi.string().min(3).max(100).optional(),
   description: joi.string().max(500).optional(),
   status: joi.string().valid(TODO, IN_PROGRESS, DONE).optional(),
-  dueDate: joi.date().optional()
+  dueDate: joi.date().min('now').optional().custom((value, helpers) => {
+    if (value) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const dueDate = new Date(value);
+      dueDate.setHours(0, 0, 0, 0);
+      if (dueDate < today) {
+        return helpers.error('date.min');
+      }
+    }
+    return value;
+  }).messages({
+    'date.min': 'Due date cannot be in the past'
+  })
 }).min(1);
 
 
