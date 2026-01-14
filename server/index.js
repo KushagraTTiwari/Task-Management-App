@@ -9,6 +9,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
+  "https://task-management-app-4rll.vercel.app"
 ];
 
 const corsOptions = {
